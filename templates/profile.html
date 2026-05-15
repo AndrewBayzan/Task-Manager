@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f4f4f4;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            width: 380px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 28px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-block {
+            background: #f8f8f8;
+            padding: 14px;
+            border-radius: 8px;
+        }
+
+        .label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .value {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="profile-card">
+
+    <h1>Profile</h1>
+
+    <div class="user-info">
+
+        <div class="info-block">
+            <div class="label">User ID</div>
+            <div class="value">{{ user.id }}</div>
+        </div>
+
+        <div class="info-block">
+            <div class="label">Username</div>
+            <div class="value">{{ user.username }}</div>
+        </div>
+
+        <div class="info-block">
+            <div class="label">Email</div>
+            <div class="value">{{ user.email }}</div>
+        </div>
+
+    </div>
+
+    <a
+        href="/auth/logout"
+        class="logout-btn"
+    >
+        Logout
+    </a>
+
+</div>
+
+</body>
+</html>
