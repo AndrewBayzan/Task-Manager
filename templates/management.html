@@ -91,7 +91,15 @@
                                                     Назначено: {{ task.assigned_user.username if task.assigned_user else 'Не назначено' }}
                                                 </div>
                                             </div>
-                                            <span class="badge bg-secondary rounded-pill">ID {{ task.id }}</span>
+                                            <div class="d-flex gap-2 align-items-center">
+                                                <span class="badge bg-secondary rounded-pill">ID {{ task.id }}</span>
+                                                <form method="post" action="/projects/{{ project.id }}/delete_task">
+                                                    <input type="hidden" name="task_id" value="{{ task.id }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        Удалить
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </li>
                                     {% endfor %}
                                 </ul>
@@ -162,7 +170,7 @@
                                     data-bs-dismiss="modal">
                                 </button>
                             </div>
-
+                        
                             <div class="modal-body">
 
                                 <div class="mb-3">
