@@ -105,11 +105,35 @@ def add_task(
 
     return RedirectResponse(url=f"/projects/{project_id}", status_code=303)
 
-# @router.post("/projects/{project_id}")
-# def del_task(
-#     project_id: int,
-#     task_title: str = Form(...),
-#     assigned_user: str| None = Form(None),
-#     user_id: int | None = Cookie(default=None),
-#     db: Session = Depends(get_db)
-# ):
+@router.post("/{project_id}/delete_task")
+def del_task(
+    project_id: int,
+    task_id: int = Form(...),
+    user_id: int | None = Cookie(default=None),
+    db: Session = Depends(get_db)
+):
+    if not user_id:
+        return RedirectResponse(url="/auth/login", status_code=303)
+    
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        return RedirectResponse(url="/projects", status_code=303)
+    
+    access = db.query(UserProject).filter(
+        UserProject.project_id == project_id,
+        UserProject.user_id == user_id
+    ).first()
+
+    if project.owner_id != user_id and not access:
+        return RedirectResponse(url="/projects", status_code=303)
+    
+    task = db.query(Task).filter(
+        Task.id == task_id,
+        Task.project_id == project_id
+        ).first()
+    
+    if task:
+        db.delete(task)
+        db.commit()
+
+    return RedirectResponse(url=f"/projects/{project_id}", status_code=303)
