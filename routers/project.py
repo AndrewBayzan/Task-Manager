@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from db import get_db
-from models import User, Project, UserProject, RoleEnum
+from models import User, Project, UserProject, RoleEnum, Task
 
 router = APIRouter(prefix="/projects", tags=["Projects page"])
 templates = Jinja2Templates(directory="templates")
@@ -78,3 +78,38 @@ def project_management(
         "request": request,
         "project": project
         })
+
+@router.post("/{project_id}/add_task")
+def add_task(
+    project_id: int,
+    task_title: str = Form(...),
+    assigned_user: str| None = Form(None),
+    user_id: int | None = Cookie(default=None),
+    db: Session = Depends(get_db)
+):
+    if not user_id:
+        return RedirectResponse(url="/auth/login", status_code=303)
+    
+    assigned = None
+    if assigned_user:
+        assigned = db.query(User).filter(User.username == assigned_user).first()
+
+    task = Task(
+        title=task_title, 
+        project_id=project_id,
+        assigned_user_id=assigned.id if assigned else None)
+    db.add(task)
+    db.commit()
+    db.refresh(task)
+
+
+    return RedirectResponse(url=f"/projects/{project_id}", status_code=303)
+
+# @router.post("/projects/{project_id}")
+# def del_task(
+#     project_id: int,
+#     task_title: str = Form(...),
+#     assigned_user: str| None = Form(None),
+#     user_id: int | None = Cookie(default=None),
+#     db: Session = Depends(get_db)
+# ):
