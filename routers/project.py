@@ -53,3 +53,28 @@ def create_project(
     db.commit()
     
     return RedirectResponse(url="/projects", status_code=303)
+
+@router.get("/{project_id}")
+def project_management(
+    request: Request,
+    project_id: int,
+    user_id: int | None = Cookie(default=None),
+    db: Session = Depends(get_db)
+):
+    if not user_id:
+        return RedirectResponse(url="/auth/login", status_code=303)
+    
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        return RedirectResponse(url="/projects", status_code=303)
+    
+    access = db.query(UserProject).filter(UserProject.project_id == project_id,
+                                          UserProject.user_id == user_id).first()
+
+    if project.owner_id != user_id and not access:
+        return RedirectResponse(url="/projects", status_code=303)
+
+    return templates.TemplateResponse("management.html", {
+        "request": request,
+        "project": project
+        })
