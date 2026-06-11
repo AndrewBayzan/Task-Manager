@@ -9,18 +9,40 @@ from models import User, Project, UserProject, RoleEnum, Task
 router = APIRouter(prefix="/projects", tags=["Projects page"])
 templates = Jinja2Templates(directory="templates")
 
+def ensure_user(user_id: int | None, db: Session):
+    if not user_id:
+        return RedirectResponse(url="/auth/login", status_code=303)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return RedirectResponse(url="/auth/login", status_code=303)
+    return user
+
+
+def get_project_or_redirect(project_id: int, db: Session):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        return RedirectResponse(url="/projects", status_code=303)
+    return project
+
+
+def has_project_access(user_id: int, project: Project, db: Session) -> bool:
+    if project.owner_id == user_id:
+        return True
+    access = db.query(UserProject).filter(
+        UserProject.project_id == project.id,
+        UserProject.user_id == user_id
+    ).first()
+    return bool(access)
+
 @router.get("/")
 def projects(
     request: Request,
     user_id: int | None = Cookie(default=None),
     db: Session = Depends(get_db)
 ):
-    if not user_id:
-        return RedirectResponse(url="/auth/login", status_code=303)
-    
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        return RedirectResponse(url="/auth/login", status_code=303)
+    user = ensure_user(user_id, db)
+    if isinstance(user, RedirectResponse):
+        return user
     
     owned_projects = db.query(Project).filter(Project.owner_id == user_id).all()
 
@@ -40,10 +62,11 @@ def create_project(
     user_id: int | None = Cookie(default=None),
     db: Session = Depends(get_db)
 ):
-    if not user_id:
-        return RedirectResponse(url="/auth/login", status_code=303)
-    
-    project = Project(project_name=project_name, owner_id=user_id)
+    user = ensure_user(user_id, db)
+    if isinstance(user, RedirectResponse):
+        return user
+
+    project = Project(project_name=project_name, owner_id=user.id)
     db.add(project)
     db.commit()
     db.refresh(project)
@@ -61,23 +84,21 @@ def project_management(
     user_id: int | None = Cookie(default=None),
     db: Session = Depends(get_db)
 ):
-    if not user_id:
-        return RedirectResponse(url="/auth/login", status_code=303)
-    
-    project = db.query(Project).filter(Project.id == project_id).first()
-    if not project:
-        return RedirectResponse(url="/projects", status_code=303)
-    
-    access = db.query(UserProject).filter(UserProject.project_id == project_id,
-                                          UserProject.user_id == user_id).first()
+    user = ensure_user(user_id, db)
+    if isinstance(user, RedirectResponse):
+        return user
 
-    if project.owner_id != user_id and not access:
+    project = get_project_or_redirect(project_id, db)
+    if isinstance(project, RedirectResponse):
+        return project
+
+    if not has_project_access(user.id, project, db):
         return RedirectResponse(url="/projects", status_code=303)
 
     return templates.TemplateResponse("management.html", {
         "request": request,
         "project": project
-        })
+    })
 
 @router.post("/{project_id}/add_task")
 def add_task(
@@ -87,9 +108,10 @@ def add_task(
     user_id: int | None = Cookie(default=None),
     db: Session = Depends(get_db)
 ):
-    if not user_id:
-        return RedirectResponse(url="/auth/login", status_code=303)
-    
+    user = ensure_user(user_id, db)
+    if isinstance(user, RedirectResponse):
+        return user
+
     assigned = None
     if assigned_user:
         assigned = db.query(User).filter(User.username == assigned_user).first()
@@ -112,25 +134,21 @@ def del_task(
     user_id: int | None = Cookie(default=None),
     db: Session = Depends(get_db)
 ):
-    if not user_id:
-        return RedirectResponse(url="/auth/login", status_code=303)
-    
-    project = db.query(Project).filter(Project.id == project_id).first()
-    if not project:
-        return RedirectResponse(url="/projects", status_code=303)
-    
-    access = db.query(UserProject).filter(
-        UserProject.project_id == project_id,
-        UserProject.user_id == user_id
-    ).first()
+    user = ensure_user(user_id, db)
+    if isinstance(user, RedirectResponse):
+        return user
 
-    if project.owner_id != user_id and not access:
+    project = get_project_or_redirect(project_id, db)
+    if isinstance(project, RedirectResponse):
+        return project
+
+    if not has_project_access(user.id, project, db):
         return RedirectResponse(url="/projects", status_code=303)
-    
+
     task = db.query(Task).filter(
         Task.id == task_id,
         Task.project_id == project_id
-        ).first()
+    ).first()
     
     if task:
         db.delete(task)
@@ -147,14 +165,13 @@ def update_task(
     user_id: int | None = Cookie(default=None),
     db: Session = Depends(get_db)
 ):
-    if not user_id:
-        return RedirectResponse(url="/projects", status_code=303)
-    
-    project = db.query(Project).filter(Project.id == project_id).first()
-    if not project_id:
-        return RedirectResponse(url="/projects", status_code=303)
-    
+    user = ensure_user(user_id, db)
+    if isinstance(user, RedirectResponse):
+        return user
 
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        return RedirectResponse(url="/projects", status_code=303)
     task = db.query(Task).filter(
         Task.id == task_id,
         Task.project_id == project_id
@@ -185,4 +202,64 @@ def update_task(
     
     return RedirectResponse(url=f"/projects/{project_id}", status_code=303)
 
+@router.post("/change_pname")
+def change_pname(
+    project_id: int,
+    user_id: int | None = Cookie(default=None),    
+    new_name: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    user = ensure_user(user_id, db)
+    if isinstance(user, RedirectResponse):
+        return user
+    
+    project = get_project_or_redirect(project_id, db)
+    if isinstance(project, RedirectResponse):
+        return project
+    
+    if not has_project_access(user.id, project, db):
+        return RedirectResponse(url="/projects", status_code=303)
+    
+    project.project_name = new_name
+    db.commit()
+    
+    return RedirectResponse(url=f"/projects/{project_id}", status_code=303)
 
+@router.post("/{project_id}/add_user")
+def add_user(
+    project_id: int,
+    username: str = Form(...),
+    user_id: int | None = Cookie(default=None),  
+    db: Session = Depends(get_db)
+):
+    user = ensure_user(user_id, db)
+    if isinstance(user, RedirectResponse):
+        return user
+
+    project = get_project_or_redirect(project_id, db)
+    if isinstance(project, RedirectResponse):
+        return project
+    
+    if not has_project_access(user.id, project, db):
+        return RedirectResponse(url="/projects", status_code=303)
+
+    new_user = db.query(User).filter(User.username == username).first()
+    if not new_user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    already_member = db.query(UserProject).filter(
+        UserProject.user_id == new_user.id,
+        UserProject.project_id == project.id
+    ).first()
+    if already_member:
+        raise HTTPException(status_code=400, detail="Пользователь уже добавлен в проект")
+
+    user_project = UserProject(
+        user_id=new_user.id,
+        project_id=project.id,
+        role=RoleEnum.member
+    )
+    db.add(user_project)
+    db.commit()
+
+    return RedirectResponse(url=f"/projects/{project_id}", status_code=303)
