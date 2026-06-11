@@ -29,15 +29,25 @@
     <main class="container py-5">
         {% if project %}
             <div class="row mb-4">
-                <div class="col-lg-8">
+                <div class="col-lg-12">
                     <div class="card shadow-sm border-0">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
                                     <h1 class="h3 fw-bold mb-1">Управление проектом</h1>
+                                    
                                     <p class="text-muted mb-0">#{{ project.id }} — {{ project.project_name }}</p>
                                 </div>
-                                <a href="/projects" class="btn btn-outline-secondary">Назад к проектам</a>
+                                <div class="d-flex gap-2">
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-warning"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#renameProjectModal">
+                                        Переименовать
+                                    </button>
+                                    <a href="/projects" class="btn btn-outline-secondary">Назад к проектам</a>
+                                </div>
                             </div>
                             
                             <div class="row gy-3">
@@ -211,6 +221,36 @@
             </div>
             <a href="/projects" class="btn btn-secondary">Вернуться к списку проектов</a>
         {% endif %}
+
+        <!-- Modal: Rename Project -->
+        <div class="modal fade" id="renameProjectModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="post" action="/projects/{{ project.id }}/change_pname">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Переименовать проект</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="new_name" class="form-label">Новое имя проекта</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="new_name"
+                                    name="new_name"
+                                    value="{{ project.project_name }}"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn btn-warning">Переименовать</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         
             <div class="modal fade" id="createTaskModal" tabindex="-1">
                 <div class="modal-dialog">
@@ -286,6 +326,35 @@
                 </div>
             </div>
 
+
+            <div class="modal fade" id="renameProjectModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="post" action="/projects/{{ project.id }}/change_pname">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Переименовать проект</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="new_name" class="form-label">Новое имя проекта</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="new_name"
+                                        name="new_name"
+                                        value="{{ project.project_name }}"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                <button type="submit" class="btn btn-warning">Переименовать</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
             <div class="modal fade" id="addUserModal" tabindex="-1">
                 <div class="modal-dialog">
