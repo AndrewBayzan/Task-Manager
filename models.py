@@ -1,8 +1,13 @@
 from sqlalchemy.orm import declarative_base, relationship
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, UniqueConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, UniqueConstraint, CheckConstraint, func, DateTime
+
 import enum
 
 Base = declarative_base()
+
+class TimeStampMixin:
+    created_at = Column(DateTime, server_default=func.now(), nullable=False
+)
 
 class User(Base):
     __tablename__ = 'users'
@@ -15,6 +20,9 @@ class User(Base):
     tasks = relationship("Task", back_populates="assigned_user")
     user_projects = relationship("UserProject", back_populates="user", cascade="all, delete-orphan")
     
+    friendships = relationship("Friendship", foreign_keys="Friendship.user_id", back_populates="user")
+    frien_of = relationship("Friendship", foreign_keys="Friendship.friend_id", back_populates="friend")
+
 class Task(Base):
     __tablename__ = 'tasks'
 
@@ -54,6 +62,27 @@ class UserProject(Base):
 
     user = relationship("User", back_populates="user_projects")
     project = relationship("Project", back_populates="user_projects")
+
+class FriendStatus(enum.Enum):
+    pending = "pending"
+    accepted = "accepted"
+    rejected = "rejected"
+    blocked = "blocked"
+
+class Friendship(Base):
+    __tablename__ = "friendships"
+    __table_args__ = (
+        UniqueConstraint("user_id", "friend_id"),
+        CheckConstraint("user_id != friend_id", name="check_not_self_friend")
+        )
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    friend_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    status = Column(Enum(FriendStatus), default=FriendStatus.pending, nullable=False )
+
+    user = relationship("User", back_populates="friendships", foreign_keys=[user_id])
+    friend = relationship("User", back_populates="friendships", foreign_keys=[friend_id])
 
 
 
