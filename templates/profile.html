@@ -1,77 +1,177 @@
 {% extends "base.html" %}
 
-{% block title %}Profile{% endblock %}
+{% block title %}Профиль{% endblock %}
 
 {% block head %}
 <style>
-    body { background: #f4f4f4; }
-    .profile-card {
-        background: white;
-        padding: 32px;
+    .dashboard-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+    }
+    .dashboard-header {
+        padding: 2rem 2.5rem;
+    }
+    .stats-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .stat-item {
+        background: #f8f9fa;
         border-radius: 12px;
-        width: 100%;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    .profile-card h1 {
+        padding: 1rem;
         text-align: center;
-        margin-bottom: 24px;
-        font-size: 28px;
     }
-    .user-info {
+    .stat-item .label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    .stat-item .value {
+        font-weight: 700;
+        font-size: 1.75rem;
+    }
+    .section-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.04);
+        margin-bottom: 1.5rem;
+    }
+    .section-card header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #ebedef;
+    }
+    .section-card .card-body {
+        padding: 1.5rem;
+    }
+    .profile-actions {
         display: flex;
-        flex-direction: column;
-        gap: 16px;
-        margin-bottom: 24px;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
     }
-    .info-block {
-        background: #f8f8f8;
-        padding: 14px;
-        border-radius: 8px;
+    .profile-actions a {
+        min-width: 140px;
     }
-    .label {
-        font-size: 13px;
-        color: #666;
-        margin-bottom: 4px;
-    }
-    .value {
-        font-size: 17px;
-        font-weight: bold;
-    }
-    .logout-btn {
-        display: block;
-        width: 100%;
-        text-align: center;
-        padding: 12px;
-        border-radius: 8px;
-        background: black;
-        color: white;
-        text-decoration: none;
-        transition: 0.2s;
-    }
-    .logout-btn:hover { opacity: 0.9; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center min-vh-75">
-    <div class="col-md-5">
-        <div class="profile-card">
-            <h1>Profile</h1>
-            <div class="user-info">
-                <div class="info-block">
-                    <div class="label">User ID</div>
-                    <div class="value">{{ user.id }}</div>
-                </div>
-                <div class="info-block">
-                    <div class="label">Username</div>
-                    <div class="value">{{ user.username }}</div>
-                </div>
-                <div class="info-block">
-                    <div class="label">Email</div>
-                    <div class="value">{{ user.email }}</div>
+<div class="dashboard-card">
+    <div class="dashboard-header">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+            <div>
+                <h1 class="h3 mb-2">Личный кабинет</h1>
+                <p class="text-muted mb-0">Добро пожаловать, {{ user.username }}!</p>
+            </div>
+            <div class="profile-actions">
+                <a href="/projects" class="btn btn-outline-primary">Мои проекты</a>
+                <a href="/auth/logout" class="btn btn-outline-danger">Выйти</a>
+            </div>
+        </div>
+    </div>
+    <div class="px-3 pb-4">
+        <div class="stats-grid mb-4">
+            <div class="stat-item">
+                <div class="label">Проектов</div>
+                <div class="value">{{ all_projects|length }}</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">Задач назначено</div>
+                <div class="value">{{ assigned_tasks|length }}</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">Участников проектов</div>
+                <div class="value">{{ member_projects|length }}</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="section-card">
+                    <header>
+                        <h2 class="h6 mb-0">Моя информация</h2>
+                    </header>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="label">ID пользователя</div>
+                            <div class="fw-semibold">{{ user.id }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="label">Имя</div>
+                            <div class="fw-semibold">{{ user.username }}</div>
+                        </div>
+                        <div class="mb-0">
+                            <div class="label">Email</div>
+                            <div class="fw-semibold">{{ user.email }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <a href="/auth/logout" class="logout-btn">Logout</a>
+
+            <div class="col-lg-6">
+                <div class="section-card">
+                    <header>
+                        <h2 class="h6 mb-0">Ссылки</h2>
+                    </header>
+                    <div class="card-body">
+                        <p class="mb-2">Перейдите к управлению вашими проектами и задачами.</p>
+                        <a href="/projects" class="btn btn-primary w-100 mb-2">Открыть проекты</a>
+                        <a href="/auth/logout" class="btn btn-secondary w-100">Выйти</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <header>
+                <h2 class="h6 mb-0">Проекты</h2>
+            </header>
+            <div class="card-body">
+                {% if all_projects %}
+                    <div class="list-group">
+                        {% for project in all_projects %}
+                            <a href="/projects/{{ project.id }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-semibold">{{ project.project_name }}</div>
+                                        <small class="text-muted">ID: {{ project.id }}</small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">Перейти</span>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">У вас пока нет проектов. Создайте первый проект на странице проектов.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="section-card">
+            <header>
+                <h2 class="h6 mb-0">Мои задачи</h2>
+            </header>
+            <div class="card-body">
+                {% if assigned_tasks %}
+                    <div class="list-group">
+                        {% for task in assigned_tasks %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-semibold">{{ task.title }}</div>
+                                        <small class="text-muted">Проект: {{ task.project.project_name if task.project else '—' }}</small>
+                                    </div>
+                                    <span class="badge bg-secondary rounded-pill">#{{ task.id }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Нет назначенных задач.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
