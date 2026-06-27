@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from db import get_db
-from models import User
+from models import User, Project, UserProject, Task
 from schemas.reg_schema import UserCreate, UserResponse
 from utils.security import hash_password, verify_password
 
@@ -51,20 +51,31 @@ def profile(
     db: Session = Depends(get_db)
 ):
     if not user_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Not authenticated"
-        )
-    
+        return RedirectResponse(url="/auth/login", status_code=303)
+
     user = db.query(User).filter(
         User.id == user_id
     ).first()
+
+    if not user:
+        return RedirectResponse(url="/auth/login", status_code=303)
+
+    owned_projects = db.query(Project).filter(Project.owner_id == user.id).all()
+    member_projects = db.query(Project).join(UserProject).filter(UserProject.user_id == user.id).all()
+    assigned_tasks = db.query(Task).filter(Task.assigned_user_id == user.id).all()
+
+    project_map = {project.id: project for project in owned_projects + member_projects}
+    all_projects = list(project_map.values())
 
     return templates.TemplateResponse(
         "profile.html",
         {
             "request": request,
-            "user": user
+            "user": user,
+            "owned_projects": owned_projects,
+            "member_projects": member_projects,
+            "assigned_tasks": assigned_tasks,
+            "all_projects": all_projects
         }
     )
 
