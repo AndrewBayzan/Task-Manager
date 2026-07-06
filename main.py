@@ -5,6 +5,7 @@ from routers.home import router as home_router
 from routers.register import router as auth_router
 from routers.login import router as login_router
 from routers.project import router as project_router
+from routers.friends import router as friends_router
 
 app = FastAPI()
 
@@ -12,6 +13,7 @@ app.include_router(home_router)
 app.include_router(auth_router)
 app.include_router(login_router)
 app.include_router(project_router)
+app.include_router(friends_router)
 
 # Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)

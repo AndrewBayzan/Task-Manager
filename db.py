@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from config import DB_URL
-from models import User, Task, Project, UserProject, RoleEnum
+from models import User, Task, Project, UserProject, RoleEnum, Friendship
 
 
 engine = create_engine(DB_URL)
@@ -9,6 +9,8 @@ engine = create_engine(DB_URL)
 SessionLocal = sessionmaker(bind=engine)
 
 session = SessionLocal()
+
+
 
 def get_db():
     db = SessionLocal()
