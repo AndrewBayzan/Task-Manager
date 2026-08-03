@@ -15,7 +15,15 @@ templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent
 
 @router.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
-    return templates.TemplateResponse(request, "login.html", {"request": request})
+    return templates.TemplateResponse(
+        request,
+        "login.html",
+        {
+            "request": request,
+            "error": request.query_params.get("error"),
+            "success": request.query_params.get("success"),
+        }
+    )
 
 @router.post("/login")
 def login_user(
@@ -27,16 +35,10 @@ def login_user(
         User.username == username
     ).first()
 
-    if not user:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid username or password"
-        )
-    
-    if not verify_password(password, user.hashed_password):
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid username or password"
+    if not user or not verify_password(password, user.hashed_password):
+        return RedirectResponse(
+            url="/auth/login?error=Invalid+username+or+password",
+            status_code=303,
         )
     
     response = RedirectResponse(
