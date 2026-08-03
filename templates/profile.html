@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Профиль{% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block head %}
 <style>
@@ -62,27 +62,27 @@
     <div class="dashboard-header">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
             <div>
-                <h1 class="h3 mb-2">Личный кабинет</h1>
-                <p class="text-muted mb-0">Добро пожаловать, {{ user.username }}!</p>
+                <h1 class="h3 mb-2">Dashboard</h1>
+                <p class="text-muted mb-0">Welcome, {{ user.username }}!</p>
             </div>
             <div class="profile-actions">
-                <a href="/projects" class="btn btn-outline-primary">Мои проекты</a>
-                <a href="/auth/logout" class="btn btn-outline-danger">Выйти</a>
+                <a href="/projects" class="btn btn-outline-primary">My Projects</a>
+                <a href="/auth/logout" class="btn btn-outline-danger">Logout</a>
             </div>
         </div>
     </div>
     <div class="px-3 pb-4">
         <div class="stats-grid mb-4">
             <div class="stat-item">
-                <div class="label">Проектов</div>
+                <div class="label">Projects</div>
                 <div class="value">{{ all_projects|length }}</div>
             </div>
             <div class="stat-item">
-                <div class="label">Задач назначено</div>
+                <div class="label">Assigned Tasks</div>
                 <div class="value">{{ assigned_tasks|length }}</div>
             </div>
             <div class="stat-item">
-                <div class="label">Участников проектов</div>
+                <div class="label">Team Members</div>
                 <div class="value">{{ member_projects|length }}</div>
             </div>
         </div>
@@ -91,15 +91,15 @@
             <div class="col-lg-6">
                 <div class="section-card">
                     <header>
-                        <h2 class="h6 mb-0">Моя информация</h2>
+                        <h2 class="h6 mb-0">My Info</h2>
                     </header>
                     <div class="card-body">
                         <div class="mb-3">
-                            <div class="label">ID пользователя</div>
+                            <div class="label">User ID</div>
                             <div class="fw-semibold">{{ user.id }}</div>
                         </div>
                         <div class="mb-3">
-                            <div class="label">Имя</div>
+                            <div class="label">Name</div>
                             <div class="fw-semibold">{{ user.username }}</div>
                         </div>
                         <div class="mb-0">
@@ -113,12 +113,12 @@
             <div class="col-lg-6">
                 <div class="section-card">
                     <header>
-                        <h2 class="h6 mb-0">Ссылки</h2>
+                        <h2 class="h6 mb-0">Links</h2>
                     </header>
                     <div class="card-body">
-                        <p class="mb-2">Перейдите к управлению вашими проектами и задачами.</p>
-                        <a href="/projects" class="btn btn-primary w-100 mb-2">Открыть проекты</a>
-                        <a href="/auth/logout" class="btn btn-secondary w-100">Выйти</a>
+                        <p class="mb-2">Go manage your projects and tasks.</p>
+                        <a href="/projects" class="btn btn-primary w-100 mb-2">Open Projects</a>
+                        <a href="/auth/logout" class="btn btn-secondary w-100">Logout</a>
                     </div>
                 </div>
             </div>
@@ -126,7 +126,7 @@
 
         <div class="section-card">
             <header>
-                <h2 class="h6 mb-0">Проекты</h2>
+                <h2 class="h6 mb-0">Projects</h2>
             </header>
             <div class="card-body">
                 {% if all_projects %}
@@ -144,14 +144,14 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-muted mb-0">У вас пока нет проектов. Создайте первый проект на странице проектов.</p>
+                    <p class="text-muted mb-0">You don’t have any projects yet. Create your first project on the Projects page.</p>
                 {% endif %}
             </div>
         </div>
 
         <div class="section-card">
             <header>
-                <h2 class="h6 mb-0">Мои задачи</h2>
+                <h2 class="h6 mb-0">My Tasks</h2>
             </header>
             <div class="card-body">
                 {% if assigned_tasks %}
@@ -161,7 +161,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="fw-semibold">{{ task.title }}</div>
-                                        <small class="text-muted">Проект: {{ task.project.project_name if task.project else '—' }}</small>
+                                        <small class="text-muted">Project: {{ task.project.project_name if task.project else '—' }}</small>
                                     </div>
                                     <span class="badge bg-secondary rounded-pill">#{{ task.id }}</span>
                                 </div>
@@ -169,7 +169,7 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-muted mb-0">Нет назначенных задач.</p>
+                    <p class="text-muted mb-0">No assigned tasks.</p>
                 {% endif %}
             </div>
         </div>

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Управление проектом{% endblock %}
+{% block title %}Project Management{% endblock %}
 
 {% block content %}
 <main class="container py-5">
@@ -11,30 +11,30 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
-                                <h1 class="h3 fw-bold mb-1">Управление проектом</h1>
+                                <h1 class="h3 fw-bold mb-1">Project Management</h1>
                                 <p class="text-muted mb-0">#{{ project.id }} — {{ project.project_name }}</p>
                             </div>
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#renameProjectModal">Переименовать</button>
-                                <a href="/projects" class="btn btn-outline-secondary">Назад к проектам</a>
+                                <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#renameProjectModal">Rename</button>
+                                <a href="/projects" class="btn btn-outline-secondary">Back to Projects</a>
                             </div>
                         </div>
                         <div class="row gy-3">
                             <div class="col-md-4">
                                 <div class="p-3 bg-light rounded-3">
-                                    <div class="text-muted small">Владелец</div>
+                                    <div class="text-muted small">Owner</div>
                                     <div class="fw-semibold mt-1">{{ project.owner.username if project.owner else '—' }}</div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="p-3 bg-light rounded-3">
-                                    <div class="text-muted small">Количество задач</div>
+                                    <div class="text-muted small">Task Count</div>
                                     <div class="fw-semibold mt-1">{{ project.tasks|length }}</div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="p-3 bg-light rounded-3">
-                                    <div class="text-muted small">Участники</div>
+                                    <div class="text-muted small">Team Members</div>
                                     <div class="fw-semibold mt-1">{{ project.user_projects|length }}</div>
                                 </div>
                             </div>
@@ -49,7 +49,7 @@
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                         <h2 class="h5 mb-0">Задачи проекта</h2>
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createTaskModal">Создать задачу</button>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createTaskModal">Create Task</button>
                     </div>
                     <div class="card-body">
                         {% if project.tasks %}
@@ -59,13 +59,13 @@
                                         <div class="d-flex justify-content-between align-items-start gap-2">
                                             <div>
                                                 <div class="fw-semibold">{{ task.title }}</div>
-                                                <div class="text-muted small">Назначено: {{ task.assigned_user.username if task.assigned_user else 'Не назначено' }}</div>
+                                                <div class="text-muted small">Assigned to: {{ task.assigned_user.username if task.assigned_user else 'Unassigned' }}</div>
                                             </div>
                                             <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editTaskModal-{{ task.id }}">Редактировать</button>
+                                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editTaskModal-{{ task.id }}">Edit</button>
                                                 <form method="post" action="/projects/{{ project.id }}/delete_task">
                                                     <input type="hidden" name="task_id" value="{{ task.id }}">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -73,19 +73,19 @@
                                             <div class="modal-dialog">
                                                 <form class="modal-content" method="post" action="/projects/{{ project.id }}/update_task">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title">Редактировать задачу #{{ task.id }}</h5>
+                                                        <h5 class="modal-title">Edit Task #{{ task.id }}</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                     </div>
                                                     <div class="modal-body">
                                                         <input type="hidden" name="task_id" value="{{ task.id }}">
                                                         <div class="mb-3">
-                                                            <label class="form-label">Название задачи</label>
+                                                            <label class="form-label">Task Title</label>
                                                             <input name="task_title" type="text" class="form-control" value="{{ task.title }}" required>
                                                         </div>
                                                         <div class="mb-3">
-                                                            <label class="form-label">Исполнитель</label>
+                                                            <label class="form-label">Assignee</label>
                                                             <select name="assigned_user" class="form-select">
-                                                                <option value="" {% if not task.assigned_user %}selected{% endif %}>Не назначено</option>
+                                                                <option value="" {% if not task.assigned_user %}selected{% endif %}>Unassigned</option>
                                                                 {% for up in project.user_projects %}
                                                                     {% if up.user %}
                                                                         <option value="{{ up.user.username }}" {% if task.assigned_user and task.assigned_user.username == up.user.username %}selected{% endif %}>{{ up.user.username }}</option>
@@ -105,7 +105,7 @@
                                 {% endfor %}
                             </ul>
                         {% else %}
-                            <div class="alert alert-info mb-0">В этом проекте пока нет задач.</div>
+                            <div class="alert alert-info mb-0">No tasks in this project yet.</div>
                         {% endif %}
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                         <h2 class="h5 mb-0">Участники</h2>
-                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">Добавить пользователя</button>
+                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">Add User</button>
                     </div>
                     <div class="card-body">
                         {% if project.user_projects %}
@@ -122,7 +122,7 @@
                                 {% for up in project.user_projects %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
-                                            <div class="fw-semibold">{{ up.user.username if up.user else 'Пользователь' }}</div>
+                                            <div class="fw-semibold">{{ up.user.username if up.user else 'User' }}</div>
                                             <div class="text-muted small">{{ up.role.value }}</div>
                                         </div>
                                         <span class="text-muted">ID {{ up.user_id }}</span>
@@ -130,15 +130,15 @@
                                 {% endfor %}
                             </ul>
                         {% else %}
-                            <div class="alert alert-info mb-0">Участников пока нет.</div>
+                            <div class="alert alert-info mb-0">No members yet.</div>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     {% else %}
-        <div class="alert alert-warning">Проект не найден или у вас нет доступа к нему.</div>
-        <a href="/projects" class="btn btn-secondary">Вернуться к списку проектов</a>
+        <div class="alert alert-warning">Project not found or access denied.</div>
+        <a href="/projects" class="btn btn-secondary">Back to projects</a>
     {% endif %}
 
     <div class="modal fade" id="renameProjectModal" tabindex="-1">
@@ -146,18 +146,18 @@
             <div class="modal-content">
                 <form method="post" action="/projects/{{ project.id }}/change_pname">
                     <div class="modal-header">
-                        <h5 class="modal-title">Переименовать проект</h5>
+                        <h5 class="modal-title">Rename Project</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="new_name" class="form-label">Новое имя проекта</label>
+                            <label for="new_name" class="form-label">New project name</label>
                             <input type="text" class="form-control" id="new_name" name="new_name" value="{{ project.project_name }}" required>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <button type="submit" class="btn btn-warning">Переименовать</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">Rename</button>
                     </div>
                 </form>
             </div>
@@ -169,18 +169,18 @@
             <div class="modal-content">
                 <form method="post" action="/projects/{{ project.id }}/add_task">
                     <div class="modal-header">
-                        <h5 class="modal-title">Создание задачи</h5>
+                        <h5 class="modal-title">Create Task</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="task_title" class="form-label">Название задачи</label>
+                            <label for="task_title" class="form-label">Task title</label>
                             <input type="text" class="form-control" id="task_title" name="task_title" required>
                         </div>
                         <div class="mb-3">
-                            <label for="assigned_user" class="form-label">Исполнитель (необязательно)</label>
+                            <label for="assigned_user" class="form-label">Assignee (optional)</label>
                             <select class="form-select" name="assigned_user">
-                                <option value="">Не назначать</option>
+                                <option value="">No assignee</option>
                                 {% for up in project.user_projects %}
                                     <option value="{{ up.user.username }}">{{ up.user.username }}</option>
                                 {% endfor %}
@@ -188,8 +188,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <button type="submit" class="btn btn-primary">Создать</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
                     </div>
                 </form>
             </div>
@@ -201,18 +201,18 @@
             <div class="modal-content">
                 <form method="post" action="/projects/{{ project.id }}/add_user">
                     <div class="modal-header">
-                        <h5 class="modal-title">Добавить пользователя</h5>
+                        <h5 class="modal-title">Add User</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Имя пользователя</label>
-                            <input type="text" class="form-control" name="username" placeholder="Введите username" required>
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" name="username" placeholder="Enter username" required>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <button type="submit" class="btn btn-success">Добавить</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Add</button>
                     </div>
                 </form>
             </div>

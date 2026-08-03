@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Друзья{% endblock %}
+{% block title %}Friends{% endblock %}
 
 {% block content %}
 {% set error_message = request.query_params.get("error") %}
@@ -22,13 +22,13 @@
     <div class="col-lg-4">
         <div class="card shadow-sm">
             <div class="card-body">
-                <h1 class="h4 mb-3">Добавить в друзья</h1>
+                <h1 class="h4 mb-3">Add Friend</h1>
                 <form method="post" action="/friends/friend_invite">
                     <div class="mb-3">
-                        <label for="friend_username" class="form-label">Имя пользователя</label>
-                        <input type="text" class="form-control" id="friend_username" name="friend_username" placeholder="Введите username" required>
+                        <label for="friend_username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="friend_username" name="friend_username" placeholder="Enter username" required>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Отправить заявку</button>
+                    <button type="submit" class="btn btn-primary w-100">Send Request</button>
                 </form>
             </div>
         </div>
@@ -37,7 +37,7 @@
     <div class="col-lg-8">
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <h2 class="h5 mb-3">Входящие заявки</h2>
+                <h2 class="h5 mb-3">Incoming Requests</h2>
                 {% if incoming_requests %}
                     <div class="list-group">
                         {% for item in incoming_requests %}
@@ -49,11 +49,11 @@
                                 <div class="d-flex gap-2">
                                     <form method="post" action="/friends/accept">
                                         <input type="hidden" name="friendship_id" value="{{ item.friendship.id }}">
-                                        <button class="btn btn-success btn-sm" type="submit">Принять</button>
+                                        <button class="btn btn-success btn-sm" type="submit">Accept</button>
                                     </form>
                                     <form method="post" action="/friends/reject">
                                         <input type="hidden" name="friendship_id" value="{{ item.friendship.id }}">
-                                        <button class="btn btn-outline-danger btn-sm" type="submit">Отклонить</button>
+                                        <button class="btn btn-outline-danger btn-sm" type="submit">Reject</button>
                                     </form>
                                 </div>
                             </div>
@@ -61,7 +61,7 @@
                     </div>
                 {% else %}
                     <div class="alert alert-info mb-0" role="alert">
-                        Нет входящих заявок.
+                        No incoming requests.
                     </div>
                 {% endif %}
             </div>
@@ -69,7 +69,7 @@
 
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <h2 class="h5 mb-3">Исходящие заявки</h2>
+                <h2 class="h5 mb-3">Outgoing Requests</h2>
                 {% if outgoing_requests %}
                     <div class="list-group">
                         {% for item in outgoing_requests %}
@@ -78,13 +78,13 @@
                                     <div class="fw-semibold">{{ item.user.username }}</div>
                                     <small class="text-muted">ID: {{ item.user.id }}</small>
                                 </div>
-                                <span class="badge bg-secondary rounded-pill">Ожидает</span>
+                                <span class="badge bg-secondary rounded-pill">Pending</span>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
                     <div class="alert alert-light mb-0" role="alert">
-                        Нет отправленных заявок.
+                        No outgoing requests.
                     </div>
                 {% endif %}
             </div>
@@ -92,7 +92,7 @@
 
         <div class="card shadow-sm">
             <div class="card-body">
-                <h2 class="h5 mb-3">Список друзей</h2>
+                <h2 class="h5 mb-3">Friends List</h2>
                 {% if friends %}
                     <div class="list-group">
                         {% for item in friends %}
@@ -102,10 +102,10 @@
                                     <small class="text-muted">ID: {{ item.user.id }}</small>
                                 </div>
                                 <div class="d-flex gap-2 align-items-center">
-                                    <span class="badge bg-primary rounded-pill">Друг</span>
-                                    <form method="post" action="/friends/delete" onsubmit="return confirm('Вы уверены, что хотите удалить этого друга?');">
+                                    <span class="badge bg-primary rounded-pill">Friend</span>
+                                    <form method="post" action="/friends/delete" onsubmit="return confirm('Are you sure you want to remove this friend?');">
                                         <input type="hidden" name="friendship_id" value="{{ item.friendship.id }}">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
                                     </form>
                                 </div>
                             </div>
@@ -113,7 +113,7 @@
                     </div>
                 {% else %}
                     <div class="alert alert-info mb-0" role="alert">
-                        У вас ещё нет друзей.
+                        You have no friends yet.
                     </div>
                 {% endif %}
             </div>
