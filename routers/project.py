@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import APIRouter, Request, Cookie, Depends, Form, HTTPException
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -7,7 +9,7 @@ from db import get_db
 from models import User, Project, UserProject, RoleEnum, Task
 
 router = APIRouter(prefix="/projects", tags=["Projects page"])
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
 
 def ensure_user(user_id: int | None, db: Session):
     if not user_id:
@@ -50,7 +52,7 @@ def projects(
 
     all_projects = list(set(owned_projects + member_projects))
 
-    return templates.TemplateResponse("project.html", {
+    return templates.TemplateResponse(request, "project.html", {
         "request": request,
         "projects": all_projects,
         "username" : user.username
@@ -95,7 +97,7 @@ def project_management(
     if not has_project_access(user.id, project, db):
         return RedirectResponse(url="/projects", status_code=303)
 
-    return templates.TemplateResponse("management.html", {
+    return templates.TemplateResponse(request, "management.html", {
         "request": request,
         "project": project
     })

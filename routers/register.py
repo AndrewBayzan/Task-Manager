@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import APIRouter, Depends, HTTPException, Request, Form
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -13,19 +15,14 @@ router = APIRouter(
     tags=["Auth"]
 )
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
 
 @router.get(
     "/register",
     response_class=HTMLResponse
 )
 def register_page(request: Request):
-    return templates.TemplateResponse(
-        "reg.html",
-        {
-            "request": request
-        }
-    )
+    return templates.TemplateResponse(request, "reg.html", {"request": request})
 
 @router.post(
     "/register",
