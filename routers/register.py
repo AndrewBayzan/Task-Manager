@@ -3,7 +3,7 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, Request, Form
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 from db import get_db
 from models import User
@@ -22,11 +22,18 @@ templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent
     response_class=HTMLResponse
 )
 def register_page(request: Request):
-    return templates.TemplateResponse(request, "reg.html", {"request": request})
+    return templates.TemplateResponse(
+        request,
+        "reg.html",
+        {
+            "request": request,
+            "error": request.query_params.get("error"),
+            "success": request.query_params.get("success"),
+        }
+    )
 
 @router.post(
-    "/register",
-    response_model=UserResponse
+    "/register"
 )
 def register_user(
     username: str = Form(...),
@@ -40,9 +47,9 @@ def register_user(
     ).first()
 
     if existing_user:
-        raise HTTPException(
-            status_code=400,
-            detail="Username already exists"
+        return RedirectResponse(
+            url="/auth/register?error=Username+already+exists",
+            status_code=303,
         )
 
     existing_email = db.query(User).filter(
@@ -50,9 +57,9 @@ def register_user(
     ).first()
 
     if existing_email:
-        raise HTTPException(
-            status_code=400,
-            detail="Email already exists"
+        return RedirectResponse(
+            url="/auth/register?error=Email+already+exists",
+            status_code=303,
         )
     
     new_user = User(
@@ -65,5 +72,8 @@ def register_user(
     db.commit()
     db.refresh(new_user)
 
-    return new_user
+    return RedirectResponse(
+        url="/auth/login?success=Account+created",
+        status_code=303,
+    )
 
