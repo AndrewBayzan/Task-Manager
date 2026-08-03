@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import APIRouter, Request, Cookie, Depends, Form, HTTPException
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import and_, or_
@@ -11,7 +13,7 @@ from models import User, Friendship, FriendStatus
 
 router = APIRouter(tags=["friends"], prefix="/friends")
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
 
 
 @router.get("/")
@@ -51,12 +53,13 @@ def get_friends(
             elif friendship.user_id == user.id:
                 outgoing_requests.append({"friendship": friendship, "user": friendship.friend})
 
-    return templates.TemplateResponse("friends.html", {
+    return templates.TemplateResponse(request, "friends.html", {
         "request": request,
         "friends": friends,
         "incoming_requests": incoming_requests,
         "outgoing_requests": outgoing_requests,
         "username": user.username,
+        "user": user
     })
 
 
