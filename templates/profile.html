@@ -5,12 +5,28 @@
 {% block head %}
 <style>
     .dashboard-card {
-        background: #fff;
+        background: rgba(15, 23, 42, 0.92);
+        border: 1px solid rgba(148, 163, 184, 0.16);
         border-radius: 16px;
-        box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.38);
+        color: #ffffff;
     }
+
+    .dashboard-card h1,
+    .dashboard-card p,
+    .dashboard-card .label,
+    .dashboard-card .value,
+    .dashboard-card .fw-semibold,
+    .dashboard-card small,
+    .dashboard-card .list-group-item,
+    .dashboard-card .section-card,
+    .dashboard-card .section-card * {
+        color: #111827;
+    }
+
     .dashboard-header {
         padding: 2rem 2.5rem;
+        color: #ffffff;
     }
     .stats-grid {
         display: grid;
@@ -18,32 +34,39 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
     .stat-item {
-        background: #f8f9fa;
+        background: rgba(255, 255, 255, 0.92);
         border-radius: 12px;
         padding: 1rem;
         text-align: center;
+        color: #111827;
     }
     .stat-item .label {
-        color: #6c757d;
+        color: #4b5563;
         font-size: 0.9rem;
         margin-bottom: 0.5rem;
     }
     .stat-item .value {
         font-weight: 700;
         font-size: 1.75rem;
+        color: #111827;
     }
     .section-card {
         background: #fff;
         border-radius: 16px;
         box-shadow: 0 12px 30px rgba(0,0,0,0.04);
         margin-bottom: 1.5rem;
+        color: #111827;
     }
     .section-card header {
         padding: 1rem 1.5rem;
         border-bottom: 1px solid #ebedef;
+        background: #fff;
+        color: #111827;
     }
     .section-card .card-body {
         padding: 1.5rem;
+        background: #fff;
+        color: #111827;
     }
     .profile-actions {
         display: flex;
@@ -63,7 +86,7 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
             <div>
                 <h1 class="h3 mb-2">Dashboard</h1>
-                <p class="text-muted mb-0">Welcome, {{ user.username }}!</p>
+                <p class="mb-0">Welcome, {{ user.username }}!</p>
             </div>
             <div class="profile-actions">
                 <a href="/projects" class="btn btn-outline-primary">My Projects</a>
@@ -136,7 +159,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="fw-semibold">{{ project.project_name }}</div>
-                                        <small class="text-muted">ID: {{ project.id }}</small>
+                                        <small>ID: {{ project.id }}</small>
                                     </div>
                                     <span class="badge bg-primary rounded-pill">Перейти</span>
                                 </div>
@@ -144,7 +167,7 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-muted mb-0">You don’t have any projects yet. Create your first project on the Projects page.</p>
+                    <p class="mb-0">You don’t have any projects yet. Create your first project on the Projects page.</p>
                 {% endif %}
             </div>
         </div>
@@ -161,7 +184,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="fw-semibold">{{ task.title }}</div>
-                                        <small class="text-muted">Project: {{ task.project.project_name if task.project else '—' }}</small>
+                                        <small>Project: {{ task.project.project_name if task.project else '—' }}</small>
                                     </div>
                                     <span class="badge bg-secondary rounded-pill">#{{ task.id }}</span>
                                 </div>
@@ -169,7 +192,7 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-muted mb-0">No assigned tasks.</p>
+                    <p class="mb-0">No assigned tasks.</p>
                 {% endif %}
             </div>
         </div>

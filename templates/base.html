@@ -10,7 +10,7 @@
 
     <style>
         body {
-            background: radial-gradient(circle at top left, #5b66ff 1%, #1f2937 1%, #0f172a 100%);
+            background: linear-gradient(135deg, #5b66ff, #0f172a);
             color: #e2e8f0;
             min-height: 100vh;
             display: flex;
@@ -64,7 +64,7 @@
 
         .btn-secondary {
             background: rgba(255, 255, 255, 0.92);
-            color: #e8e5e5;
+            color: #1f2937;
             border: 1px solid rgba(15, 23, 42, 0.12);
         }
 
@@ -73,9 +73,16 @@
         input[type="text"],
         input[type="password"],
         input[type="email"] {
-            background: rgba(180, 201, 251, 0.9);
-            color: #ffffff;
+            background: rgba(208, 216, 228, 0.82);
+            color: #111827;
             border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .form-control::placeholder,
+        .form-select::placeholder,
+        input::placeholder {
+            color: #334155 !important;
+            opacity: 1;
         }
 
         .form-control:focus,
@@ -84,8 +91,16 @@
             box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25);
         }
 
+        .text-muted {
+            color: inherit !important;
+        }
+
         footer {
             margin-top: auto;
+        }
+
+        footer .container {
+            color: #1f2937;
         }
     </style>
 
@@ -127,7 +142,7 @@
     </main>
 
     <footer class="bg-white border-top py-4">
-        <div class="container text-center text-muted">
+        <div class="container text-center">
             © 2026 TaskFlow
         </div>
     </footer>

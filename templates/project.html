@@ -2,10 +2,31 @@
 
 {% block title %}Projects{% endblock %}
 
+{% block head %}
+<style>
+    .card,
+    .card-body,
+    .card-footer,
+    .alert,
+    .modal-content {
+        color: #ffffff !important;
+    }
+
+    .card-title,
+    .card-text,
+    .modal-title,
+    .form-label,
+    .alert h4,
+    .alert p {
+        color: #ffffff !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
     <h1>📁 Your Projects</h1>
-    <p class="text-muted">User: <strong>{{ username }}</strong></p>
+    <p>User: <strong>{{ username }}</strong></p>
 
     <button class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#createProjectModal">
         + Create New Project
@@ -39,7 +60,7 @@
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">{{ project.project_name }}</h5>
-                            <p class="card-text text-muted">ID: {{ project.id }}</p>
+                            <p class="card-text">ID: {{ project.id }}</p>
                         </div>
                         <div class="card-footer bg-white">
                             <a href="/projects/{{ project.id }}" class="btn btn-success w-100">Перейти →</a>

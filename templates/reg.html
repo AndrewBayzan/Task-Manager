@@ -4,9 +4,10 @@
 
 {% block head %}
 <style>
-    body { background: #f4f4f4; }
+    body { background: linear-gradient(135deg, #5b66ff, #0f172a); }
     .register-card {
-        background: white;
+        background: rgba(248, 249, 249, 0.9);
+        color: #111827;
         padding: 32px;
         border-radius: 12px;
         width: 100%;
@@ -16,6 +17,7 @@
         margin-bottom: 24px;
         text-align: center;
         font-size: 28px;
+        color: #111827;
     }
     .register-card form {
         display: flex;
@@ -24,9 +26,15 @@
     }
     .register-card input {
         padding: 12px;
-        border: 1px solid #ddd;
+        border: 1px solid rgba(31, 41, 55, 0.2);
         border-radius: 8px;
         font-size: 16px;
+        background: rgba(204, 212, 224, 0.9);
+        color: #111827;
+    }
+    .register-card input::placeholder {
+        color: #334155;
+        opacity: 1;
     }
     .register-card button {
         padding: 12px;
