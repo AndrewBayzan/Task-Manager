@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from db import get_db
-from models import User, Project, UserProject, RoleEnum, Task
+from models import User, Project, UserProject, RoleEnum, Task, TaskStatus
 
 router = APIRouter(prefix="/projects", tags=["Projects page"])
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
@@ -202,6 +202,38 @@ def update_task(
 
     db.commit()
     
+    return RedirectResponse(url=f"/projects/{project_id}", status_code=303)
+
+@router.post("/{project_id}/toggle_task_status")
+def toggle_task_status(
+    project_id: int,
+    task_id: int = Form(...),
+    done: int = Form(0),
+    user_id: int | None = Cookie(default=None),
+    db: Session = Depends(get_db)
+):
+    user = ensure_user(user_id, db)
+    if isinstance(user, RedirectResponse):
+        return user
+
+    project = get_project_or_redirect(project_id, db)
+    if isinstance(project, RedirectResponse):
+        return project
+
+    if not has_project_access(user.id, project, db):
+        return RedirectResponse(url="/projects", status_code=303)
+
+    task = db.query(Task).filter(
+        Task.id == task_id,
+        Task.project_id == project_id
+    ).first()
+
+    if not task:
+        return RedirectResponse(url=f"/projects/{project_id}", status_code=303)
+
+    task.status = TaskStatus.done if done == 1 else TaskStatus.in_progress
+    db.commit()
+
     return RedirectResponse(url=f"/projects/{project_id}", status_code=303)
 
 @router.post("/change_pname")

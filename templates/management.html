@@ -148,12 +148,22 @@
                                                 <div class="fw-semibold">{{ task.title }}</div>
                                                 <div class="small">Assigned to: {{ task.assigned_user.username if task.assigned_user else 'Unassigned' }}</div>
                                             </div>
-                                            <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editTaskModal-{{ task.id }}">Edit</button>
-                                                <form method="post" action="/projects/{{ project.id }}/delete_task">
-                                                    <input type="hidden" name="task_id" value="{{ task.id }}">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                                </form>
+                                            <div class="d-flex flex-column align-items-end gap-2">
+                                                <span class="badge {% if task.status and task.status.value == 'done' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                                    {{ 'Выполнено' if task.status and task.status.value == 'done' else 'В процессе' }}
+                                                </span>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <form method="post" action="/projects/{{ project.id }}/toggle_task_status" class="d-flex align-items-center gap-2 mb-0">
+                                                        <input type="hidden" name="task_id" value="{{ task.id }}">
+                                                        <input type="checkbox" class="form-check-input" name="done" value="1" {% if task.status and task.status.value == 'done' %}checked{% endif %} onchange="this.form.submit()">
+                                                        <label class="form-check-label small mb-0">Готово</label>
+                                                    </form>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editTaskModal-{{ task.id }}">Edit</button>
+                                                    <form method="post" action="/projects/{{ project.id }}/delete_task">
+                                                        <input type="hidden" name="task_id" value="{{ task.id }}">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="modal fade" id="editTaskModal-{{ task.id }}" tabindex="-1">
