@@ -10,14 +10,78 @@
 
     <style>
         body {
-            background-color: #f8f9fa;
+            background: radial-gradient(circle at top left, #5b66ff 1%, #1f2937 1%, #0f172a 100%);
+            color: #e2e8f0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        .navbar {
+            background: rgba(15, 23, 42, 0.96);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+        }
+
         .navbar-brand {
             font-weight: 700;
+            color: #c7d2fe !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: #c7d2fe !important;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #a5b4fc !important;
+        }
+
+        .card,
+        .card-body,
+        .login-card,
+        .register-card,
+        .section-card,
+        .dashboard-card,
+        .modal-content {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            color: #ffffff;
+        }
+
+        .card {
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.38);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7c3aed, #2563eb);
+            border: none;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #6d28d9, #1d4ed8);
+            color: #ffffff;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.92);
+            color: #e8e5e5;
+            border: 1px solid rgba(15, 23, 42, 0.12);
+        }
+
+        .form-control,
+        .form-select,
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            background: rgba(180, 201, 251, 0.9);
+            color: #ffffff;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25);
         }
 
         footer {
@@ -28,7 +92,7 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">TaskFlow</a>
 
