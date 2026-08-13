@@ -23,6 +23,11 @@ class User(Base):
     friendships = relationship("Friendship", foreign_keys="Friendship.user_id", back_populates="user")
     frien_of = relationship("Friendship", foreign_keys="Friendship.friend_id", back_populates="friend")
 
+class TaskStatus(enum.Enum):
+    in_progress = "in_progress"
+    done = "done"
+    
+
 class Task(Base):
     __tablename__ = 'tasks'
 
@@ -31,6 +36,7 @@ class Task(Base):
     
     project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
     assigned_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    status = Column(Enum(TaskStatus), default=TaskStatus.in_progress, nullable=False)
 
     project = relationship("Project", back_populates="tasks")
     assigned_user = relationship("User", back_populates="tasks")
@@ -83,24 +89,3 @@ class Friendship(Base):
 
     user = relationship("User", back_populates="friendships", foreign_keys=[user_id])
     friend = relationship("User", back_populates="friendships", foreign_keys=[friend_id])
-
-
-
-# users:
-# - id
-# - name
-
-# projects:
-# - id
-# - project_name
-
-# tasks:
-# - id
-# - title
-# - user_id
-# - project_id
-
-# user_projects:
-# - user_id
-# - project_id
-# - role
