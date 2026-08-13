@@ -2,17 +2,104 @@
 
 {% block title %}Project Management{% endblock %}
 
+{% block head %}
+<style>
+    .project-shell {
+        background: rgba(15, 23, 42, 0.92);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 18px;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.38);
+        padding: 1.5rem;
+    }
+
+    .project-shell .card,
+    .project-shell .card-header,
+    .project-shell .card-body,
+    .project-shell .list-group-item,
+    .project-shell .modal-content,
+    .project-shell .modal-header,
+    .project-shell .modal-body,
+    .project-shell .modal-footer,
+    .project-shell .alert {
+        background: #ffffff !important;
+        color: #111827 !important;
+    }
+
+    .project-shell .card {
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.07);
+        border: 1px solid rgba(148, 163, 184, 0.2) !important;
+    }
+
+    .project-shell .card-header,
+    .project-shell .card-body,
+    .project-shell .list-group-item,
+    .project-shell .modal-header,
+    .project-shell .modal-body,
+    .project-shell .modal-footer,
+    .project-shell .alert {
+        border-color: rgba(148, 163, 184, 0.2) !important;
+    }
+
+    .project-shell .card-header h2,
+    .project-shell .card-header h5,
+    .project-shell .card-body,
+    .project-shell .list-group-item,
+    .project-shell .btn,
+    .project-shell .form-label,
+    .project-shell .modal-title,
+    .project-shell .modal-body,
+    .project-shell .alert,
+    .project-shell .alert-info,
+    .project-shell .small,
+    .project-shell .fw-semibold,
+    .project-shell span,
+    .project-shell p,
+    .project-shell h1,
+    .project-shell h2,
+    .project-shell h5 {
+        color: #111827 !important;
+    }
+
+    .project-shell .card {
+        height: auto !important;
+    }
+
+    .project-shell .row.g-4 {
+        align-items: flex-start;
+    }
+
+    .project-shell .project-panel {
+        display: flex;
+        align-self: flex-start;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .project-shell .project-panel .card {
+        width: 100%;
+        min-height: 100%;
+        margin: 0;
+    }
+
+    .project-shell .row.g-4 {
+        margin-left: -0.75rem;
+        margin-right: -0.75rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <main class="container py-5">
     {% if project %}
-        <div class="row mb-4">
+        <div class="project-shell">
+            <div class="row mb-4">
             <div class="col-lg-12">
                 <div class="card shadow-sm border-0">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
                                 <h1 class="h3 fw-bold mb-1">Project Management</h1>
-                                <p class="text-muted mb-0">#{{ project.id }} — {{ project.project_name }}</p>
+                                <p class="mb-0">#{{ project.id }} — {{ project.project_name }}</p>
                             </div>
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#renameProjectModal">Rename</button>
@@ -22,19 +109,19 @@
                         <div class="row gy-3">
                             <div class="col-md-4">
                                 <div class="p-3 bg-light rounded-3">
-                                    <div class="text-muted small">Owner</div>
+                                    <div class="small">Owner</div>
                                     <div class="fw-semibold mt-1">{{ project.owner.username if project.owner else '—' }}</div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="p-3 bg-light rounded-3">
-                                    <div class="text-muted small">Task Count</div>
+                                    <div class="small">Task Count</div>
                                     <div class="fw-semibold mt-1">{{ project.tasks|length }}</div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="p-3 bg-light rounded-3">
-                                    <div class="text-muted small">Team Members</div>
+                                    <div class="small">Team Members</div>
                                     <div class="fw-semibold mt-1">{{ project.user_projects|length }}</div>
                                 </div>
                             </div>
@@ -44,11 +131,11 @@
             </div>
         </div>
 
-        <div class="row g-4">
-            <div class="col-lg-6">
-                <div class="card shadow-sm border-0 h-100">
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-6 project-panel">
+                <div class="card shadow-sm border-0">
                     <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
-                        <h2 class="h5 mb-0">Задачи проекта</h2>
+                        <h2 class="h5 mb-0">Tasks</h2>
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createTaskModal">Create Task</button>
                     </div>
                     <div class="card-body">
@@ -59,7 +146,7 @@
                                         <div class="d-flex justify-content-between align-items-start gap-2">
                                             <div>
                                                 <div class="fw-semibold">{{ task.title }}</div>
-                                                <div class="text-muted small">Assigned to: {{ task.assigned_user.username if task.assigned_user else 'Unassigned' }}</div>
+                                                <div class="small">Assigned to: {{ task.assigned_user.username if task.assigned_user else 'Unassigned' }}</div>
                                             </div>
                                             <div class="d-flex gap-2">
                                                 <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editTaskModal-{{ task.id }}">Edit</button>
@@ -110,10 +197,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="card shadow-sm border-0 h-100">
+            <div class="col-lg-6 project-panel">
+                <div class="card shadow-sm border-0">
                     <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
-                        <h2 class="h5 mb-0">Участники</h2>
+                        <h2 class="h5 mb-0">Members</h2>
                         <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">Add User</button>
                     </div>
                     <div class="card-body">
@@ -123,9 +210,9 @@
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
                                             <div class="fw-semibold">{{ up.user.username if up.user else 'User' }}</div>
-                                            <div class="text-muted small">{{ up.role.value }}</div>
+                                            <div class="small">{{ up.role.value }}</div>
                                         </div>
-                                        <span class="text-muted">ID {{ up.user_id }}</span>
+                                        <span>ID {{ up.user_id }}</span>
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -135,6 +222,7 @@
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     {% else %}
         <div class="alert alert-warning">Project not found or access denied.</div>

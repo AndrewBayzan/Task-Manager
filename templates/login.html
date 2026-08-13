@@ -6,7 +6,8 @@
 <style>
     body { background: linear-gradient(135deg, #5b66ff, #0f172a); }
     .login-card {
-        background: linear-gradient(135deg, #7c3aed, #2563eb);
+        background: rgba(248, 249, 249, 0.9);
+        color: #111827;
         padding: 32px;
         border-radius: 12px;
         width: 100%;
@@ -16,6 +17,7 @@
         margin-bottom: 24px;
         text-align: center;
         font-size: 28px;
+        color: #111827;
     }
     .login-card form {
         display: flex;
@@ -24,9 +26,15 @@
     }
     .login-card input {
         padding: 12px;
-        border: 1px solid #ddd;
+        border: 1px solid rgba(31, 41, 55, 0.2);
         border-radius: 8px;
         font-size: 16px;
+        background: rgba(204, 212, 224, 0.9);
+        color: #111827;
+    }
+    .login-card input::placeholder {
+        color: #334155;
+        opacity: 1;
     }
     .login-card button {
         padding: 12px;
@@ -50,10 +58,10 @@
         margin-top: 18px;
         text-align: center;
         font-size: 14px;
-        color: #666;
+        color: #374151;
     }
     .bottom-text a {
-        color: black;
+        color: #111827;
         text-decoration: none;
         font-weight: bold;
     }
