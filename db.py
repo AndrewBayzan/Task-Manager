@@ -1,10 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from config import DB_URL
+from config import DB_URL, NEONDB_URL
 from models import User, Task, Project, UserProject, RoleEnum, Friendship
 
 
-engine = create_engine(DB_URL)
+engine = create_engine(NEONDB_URL)
 
 SessionLocal = sessionmaker(bind=engine)
 
