@@ -1,0 +1,15 @@
+
+services:
+  - type: web
+    name: task-manager
+    runtime: docker
+    plan: free
+    region: frankfurt
+
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+
+    envVars:
+      - key: NEONDB_URL
+        sync: false
