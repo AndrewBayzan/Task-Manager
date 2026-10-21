@@ -18,21 +18,124 @@
         }
 
         .navbar {
-            background: rgba(15, 23, 42, 0.96);
-            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+            background: rgba(15, 23, 42, 0.88);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 0.85rem 0;
+        }
+
+        .navbar .container {
+            gap: 1rem;
         }
 
         .navbar-brand {
-            font-weight: 700;
-            color: #c7d2fe !important;
+            align-items: center;
+            color: #ffffff !important;
+            display: inline-flex;
+            font-size: 1.25rem;
+            font-weight: 750;
+            gap: 0.65rem;
+            letter-spacing: -0.04em;
+        }
+
+        .brand-mark {
+            align-items: center;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border-radius: 0.7rem;
+            box-shadow: 0 5px 18px rgba(99, 102, 241, 0.35);
+            display: inline-flex;
+            height: 2rem;
+            justify-content: center;
+            width: 2rem;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.2rem rgba(129, 140, 248, 0.28);
         }
 
         .navbar-nav .nav-link {
-            color: #c7d2fe !important;
+            border-radius: 0.65rem;
+            color: #cbd5e1 !important;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0.55rem 0.85rem !important;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
-        .navbar-nav .nav-link:hover {
-            color: #a5b4fc !important;
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            background: rgba(129, 140, 248, 0.14);
+            color: #ffffff !important;
+        }
+
+        .navbar-account {
+            align-items: center;
+            background: rgba(148, 163, 184, 0.12);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 999px;
+            color: #e2e8f0;
+            display: inline-flex;
+            font-size: 0.9rem;
+            font-weight: 600;
+            gap: 0.55rem;
+            margin-left: 0.75rem;
+            max-width: 14rem;
+            padding: 0.4rem 0.8rem 0.4rem 0.45rem;
+        }
+
+        .navbar-account-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .navbar-account-avatar {
+            align-items: center;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border-radius: 50%;
+            color: #ffffff;
+            display: inline-flex;
+            flex: 0 0 1.8rem;
+            height: 1.8rem;
+            justify-content: center;
+            text-transform: uppercase;
+            width: 1.8rem;
+        }
+
+        .navbar-signup {
+            background: linear-gradient(135deg, #7c3aed, #2563eb);
+            border-radius: 0.65rem;
+            color: #ffffff !important;
+            margin-left: 0.4rem;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+
+        .navbar-signup:hover {
+            background: linear-gradient(135deg, #6d28d9, #1d4ed8) !important;
+            color: #ffffff !important;
+        }
+
+        @media (max-width: 991.98px) {
+            .navbar-nav {
+                align-items: stretch;
+                padding-top: 0.75rem;
+            }
+
+            .navbar-account {
+                margin: 0.75rem 0 0;
+                width: fit-content;
+            }
+
+            .navbar-signup {
+                margin: 0.35rem 0 0;
+                text-align: center;
+            }
         }
 
         .card,
@@ -107,31 +210,49 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">TaskFlow</a>
+            <a class="navbar-brand" href="/">
+                <span class="brand-mark" aria-hidden="true">T</span>
+                <span>TaskFlow</span>
+            </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link{% if request.url.path == '/' %} active{% endif %}" href="/">Home</a>
+                    </li>
+                    {% if current_user %}
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.url.path == '/auth/profile' %} active{% endif %}" href="/auth/profile">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/auth/login">Login</a>
+                        <a class="nav-link{% if request.url.path.startswith('/projects') %} active{% endif %}" href="/projects">Projects</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/auth/profile">Profile</a>
+                        <a class="nav-link{% if request.url.path.startswith('/friends') %} active{% endif %}" href="/friends">Friends</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/projects">Projects</a>
+                        <a class="nav-link" href="/auth/logout">Log out</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/friends">Friends</a>
+                        <span class="navbar-account" title="{{ current_user.username }}">
+                            <span class="navbar-account-avatar" aria-hidden="true">{{ current_user.username[:1] }}</span>
+                            <span class="navbar-account-name">{{ current_user.username }}</span>
+                        </span>
                     </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.url.path == '/auth/register' %} active{% endif %} navbar-signup" href="/auth/register">Sign up</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.url.path == '/auth/login' %} active{% endif %}" href="/auth/login">Log in</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

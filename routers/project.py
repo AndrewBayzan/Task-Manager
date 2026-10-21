@@ -1,15 +1,12 @@
-from pathlib import Path
-
 from fastapi import APIRouter, Request, Cookie, Depends, Form, HTTPException
-from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from db import get_db
 from models import User, Project, UserProject, RoleEnum, Task, TaskStatus
+from utils.templates import templates
 
 router = APIRouter(prefix="/projects", tags=["Projects page"])
-templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
 
 def ensure_user(user_id: int | None, db: Session):
     if not user_id:

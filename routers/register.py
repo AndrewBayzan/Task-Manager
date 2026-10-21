@@ -1,21 +1,17 @@
-from pathlib import Path
-
-from fastapi import APIRouter, Depends, HTTPException, Request, Form
-from fastapi.templating import Jinja2Templates
+from fastapi import APIRouter, Depends, Request, Form
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from db import get_db
 from models import User
-from schemas.reg_schema import UserCreate, UserResponse
 from utils.security import hash_password
+from utils.templates import templates
 
 router = APIRouter(
     prefix="/auth",
     tags=["Auth"]
 )
-
-templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
 
 @router.get(
     "/register",
@@ -69,11 +65,23 @@ def register_user(
     )
 
     db.add(new_user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        existing_email = db.query(User).filter(
+            User.email == email
+        ).first()
+        if existing_email:
+            return RedirectResponse(
+                url="/auth/register?error=Email+already+exists",
+                status_code=303,
+            )
+        raise
+
     db.refresh(new_user)
 
     return RedirectResponse(
         url="/auth/login?success=Account+created",
         status_code=303,
     )
-

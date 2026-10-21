@@ -1,7 +1,4 @@
-from pathlib import Path
-
 from fastapi import APIRouter, Request, Cookie, Depends, Form, HTTPException
-from fastapi.templating import Jinja2Templates
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
@@ -9,12 +6,10 @@ from routers.project import ensure_user
 
 from db import get_db
 from models import User, Friendship, FriendStatus
+from utils.templates import templates
 
 
 router = APIRouter(tags=["friends"], prefix="/friends")
-
-templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
-
 
 @router.get("/")
 def get_friends(
@@ -182,5 +177,4 @@ def delete_friend(
     db.commit()
 
     return RedirectResponse(url="/friends?success=Друг%20удален", status_code=303)
-
 
