@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Form, Cookie
+from fastapi import APIRouter, Depends, Request, Form, Cookie
 from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from db import get_db
 from models import User, Project, UserProject, Task
-from schemas.reg_schema import UserCreate, UserResponse
-from utils.security import hash_password, verify_password
+from schemas.reg_schema import UserResponse
+from utils.security import verify_password
 from utils.templates import templates
 
 router = APIRouter(prefix="/auth", tags=["Login"])
@@ -73,7 +73,7 @@ def profile(
         "profile.html",
         {
             "request": request,
-            "user": user,
+            "user": UserResponse.model_validate(user),
             "owned_projects": owned_projects,
             "member_projects": member_projects,
             "assigned_tasks": assigned_tasks,
