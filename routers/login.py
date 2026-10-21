@@ -81,7 +81,7 @@ def profile(
         }
     )
 
-@router.get("/logout")
+@router.post("/logout")
 def logout():
     response = RedirectResponse(
         url="/auth/login",

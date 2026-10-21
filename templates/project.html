@@ -35,6 +35,9 @@
 
 {% block content %}
 <div class="container mt-5">
+    {% if request.query_params.get("error") %}
+        <div class="alert alert-warning" role="alert">{{ request.query_params.get("error") }}</div>
+    {% endif %}
     <h1>📁 Your Projects</h1>
     <p>User: <strong>{{ username }}</strong></p>
 
@@ -73,7 +76,14 @@
                             <p class="card-text">ID: {{ project.id }}</p>
                         </div>
                         <div class="card-footer bg-white">
-                            <a href="/projects/{{ project.id }}" class="btn btn-success w-100">Перейти →</a>
+                            <div class="d-flex gap-2">
+                                <a href="/projects/{{ project.id }}" class="btn btn-success flex-grow-1">Open Project →</a>
+                                {% if project.owner_id == user_id %}
+                                    <form method="post" action="/projects/{{ project.id }}/delete" onsubmit="return confirm('Permanently delete this project and all its tasks? This cannot be undone.');">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -29,6 +29,10 @@
         padding: 2rem 2.5rem;
         color: #ffffff;
     }
+    .dashboard-header h1,
+    .dashboard-header p {
+        color: #ffffff;
+    }
     .stats-grid {
         display: grid;
         gap: 1rem;
@@ -93,7 +97,9 @@
             </div>
             <div class="profile-actions">
                 <a href="/projects" class="btn btn-outline-primary">My Projects</a>
-                <a href="/auth/logout" class="btn btn-outline-danger">Logout</a>
+                <form method="post" action="/auth/logout" onsubmit="return confirm('Are you sure you want to log out?');">
+                    <button type="submit" class="btn btn-danger">Log out</button>
+                </form>
             </div>
         </div>
     </div>
@@ -144,7 +150,9 @@
                     <div class="card-body">
                         <p class="mb-2">Go manage your projects and tasks.</p>
                         <a href="/projects" class="btn btn-primary w-100 mb-2">Open Projects</a>
-                        <a href="/auth/logout" class="btn btn-secondary w-100">Logout</a>
+                        <form method="post" action="/auth/logout" onsubmit="return confirm('Are you sure you want to log out?');">
+                            <button type="submit" class="btn btn-danger w-100">Log out</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -164,7 +172,7 @@
                                         <div class="fw-semibold">{{ project.project_name }}</div>
                                         <small>ID: {{ project.id }}</small>
                                     </div>
-                                    <span class="badge bg-primary rounded-pill">Перейти</span>
+                                    <span class="badge bg-primary rounded-pill">Open</span>
                                 </div>
                             </a>
                         {% endfor %}

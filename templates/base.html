@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,6 +121,20 @@
             color: #ffffff !important;
         }
 
+        .navbar-logout {
+            background: #dc2626;
+            border-radius: 0.65rem;
+            color: #ffffff !important;
+            margin-left: 0.4rem;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+
+        .navbar-logout:hover {
+            background: #b91c1c !important;
+            color: #ffffff !important;
+        }
+
         @media (max-width: 991.98px) {
             .navbar-nav {
                 align-items: stretch;
@@ -234,10 +248,17 @@
                         <a class="nav-link{% if request.url.path.startswith('/projects') %} active{% endif %}" href="/projects">Projects</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if request.url.path.startswith('/friends') %} active{% endif %}" href="/friends">Friends</a>
+                        <a class="nav-link{% if request.url.path.startswith('/friends') %} active{% endif %}" href="/friends">
+                            Friends
+                            {% if incoming_friend_requests %}
+                                <span class="badge rounded-pill bg-danger ms-1">{{ incoming_friend_requests }}</span>
+                            {% endif %}
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/auth/logout">Log out</a>
+                        <form method="post" action="/auth/logout" onsubmit="return confirm('Are you sure you want to log out?');">
+                            <button class="nav-link navbar-logout" type="submit">Log out</button>
+                        </form>
                     </li>
                     <li class="nav-item">
                         <span class="navbar-account" title="{{ current_user.username }}">

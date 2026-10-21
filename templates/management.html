@@ -63,6 +63,7 @@
     .project-shell .card {
         height: auto !important;
         border-radius: 16px !important;
+        overflow: hidden;
     }
 
     .project-shell .card-header:first-child {
@@ -103,6 +104,12 @@
 
 {% block content %}
 <main class="container py-5">
+    {% if request.query_params.get("error") %}
+        <div class="alert alert-warning" role="alert">
+            {{ request.query_params.get("error") }}
+        </div>
+    {% endif %}
+
     {% if project %}
         <div class="project-shell">
             <div class="row mb-4">
@@ -116,6 +123,11 @@
                             </div>
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#renameProjectModal">Rename</button>
+                                {% if current_user and current_user.id == project.owner_id %}
+                                    <form method="post" action="/projects/{{ project.id }}/delete" onsubmit="return confirm('Permanently delete this project and all its tasks? This cannot be undone.');">
+                                        <button type="submit" class="btn btn-danger">Delete Project</button>
+                                    </form>
+                                {% endif %}
                                 <a href="/projects" class="btn btn-outline-secondary">Back to Projects</a>
                             </div>
                         </div>
@@ -163,13 +175,13 @@
                                             </div>
                                             <div class="d-flex flex-column align-items-end gap-2">
                                                 <span class="badge {% if task.status and task.status.value == 'done' %}bg-success{% else %}bg-warning text-dark{% endif %}">
-                                                    {{ 'Выполнено' if task.status and task.status.value == 'done' else 'В процессе' }}
+                                                    {{ 'Done' if task.status and task.status.value == 'done' else 'In Progress' }}
                                                 </span>
                                                 <div class="d-flex align-items-center gap-2">
                                                     <form method="post" action="/projects/{{ project.id }}/toggle_task_status" class="d-flex align-items-center gap-2 mb-0">
                                                         <input type="hidden" name="task_id" value="{{ task.id }}">
                                                         <input type="checkbox" class="form-check-input" name="done" value="1" {% if task.status and task.status.value == 'done' %}checked{% endif %} onchange="this.form.submit()">
-                                                        <label class="form-check-label small mb-0">Готово</label>
+                                                        <label class="form-check-label small mb-0">Done</label>
                                                     </form>
                                                     <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editTaskModal-{{ task.id }}">Edit</button>
                                                     <form method="post" action="/projects/{{ project.id }}/delete_task">
@@ -205,8 +217,8 @@
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary">Save</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -235,7 +247,15 @@
                                             <div class="fw-semibold">{{ up.user.username if up.user else 'User' }}</div>
                                             <div class="small">{{ up.role.value }}</div>
                                         </div>
-                                        <span>ID {{ up.user_id }}</span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span>ID {{ up.user_id }}</span>
+                                            {% if current_user and current_user.id == project.owner_id and up.user_id != project.owner_id %}
+                                                <form method="post" action="/projects/{{ project.id }}/remove_member" onsubmit="return confirm('Remove {{ up.user.username if up.user else 'this user' }} from the project?');">
+                                                    <input type="hidden" name="member_id" value="{{ up.user_id }}">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -317,13 +337,20 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input type="text" class="form-control" name="username" placeholder="Enter username" required>
+                            <label class="form-label">Friend</label>
+                                <select class="form-select" name="friend_id" required {% if not friends %}disabled{% endif %}>
+                                    <option value="" selected disabled>
+                                        {% if friends %}Select a friend{% else %}No friends available to add{% endif %}
+                                    </option>
+                                    {% for friend in friends %}
+                                        <option value="{{ friend.id }}">{{ friend.username }}</option>
+                                    {% endfor %}
+                                </select>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success">Add</button>
+                        <button type="submit" class="btn btn-success" {% if not friends %}disabled{% endif %}>Add</button>
                     </div>
                 </form>
             </div>

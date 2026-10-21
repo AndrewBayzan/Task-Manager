@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from fastapi import APIRouter, Request, Cookie, Depends, Form, HTTPException
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
@@ -14,6 +16,7 @@ router = APIRouter(tags=["friends"], prefix="/friends")
 @router.get("/")
 def get_friends(
     request: Request,
+    search: str | None = None,
     user_id: int | None = Cookie(default=None),
     db: Session = Depends(get_db)
 ):
@@ -35,6 +38,29 @@ def get_friends(
     friends = []
     incoming_requests = []
     outgoing_requests = []
+    search_results = []
+
+    search = search.strip() if search else ""
+    if search:
+        connected_user_ids = (
+            db.query(Friendship.user_id.label("user_id"))
+            .filter(Friendship.friend_id == user.id)
+            .union(
+                db.query(Friendship.friend_id.label("user_id"))
+                .filter(Friendship.user_id == user.id)
+            )
+        )
+        search_results = (
+            db.query(User)
+            .filter(
+                User.id != user.id,
+                User.username.ilike(f"%{search}%"),
+                ~User.id.in_(connected_user_ids),
+            )
+            .order_by(User.username)
+            .limit(20)
+            .all()
+        )
 
     for friendship in friendships:
         if friendship.status == FriendStatus.accepted:
@@ -53,6 +79,8 @@ def get_friends(
         "friends": friends,
         "incoming_requests": incoming_requests,
         "outgoing_requests": outgoing_requests,
+        "search": search,
+        "search_results": search_results,
         "username": user.username,
         "user": user
     })
@@ -60,7 +88,6 @@ def get_friends(
 
 @router.post("/friend_invite")
 def friend_invite(
-    request: Request,
     friend_username: str = Form(...),
     user_id: int | None = Cookie(default=None),
     db: Session = Depends(get_db)
@@ -71,10 +98,16 @@ def friend_invite(
 
     target_user = db.query(User).filter(User.username == friend_username).first()
     if not target_user:
-        return RedirectResponse(url="/friends?error=Пользователь%20не%20найден", status_code=303)
+        return RedirectResponse(
+            url=f"/friends?{urlencode({'error': 'User not found'})}",
+            status_code=303,
+        )
 
     if target_user.id == user.id:
-        return RedirectResponse(url="/friends?error=Нельзя%20добавить%20самого%20себя%20в%20друзья", status_code=303)
+        return RedirectResponse(
+            url=f"/friends?{urlencode({'error': 'You cannot send a friend request to yourself'})}",
+            status_code=303,
+        )
 
     existing = (
         db.query(Friendship)
@@ -87,7 +120,10 @@ def friend_invite(
         .first()
     )
     if existing:
-        return RedirectResponse(url="/friends?error=Заявка%20уже%20отправлена", status_code=303)
+        return RedirectResponse(
+            url=f"/friends?{urlencode({'error': 'A friend request or friendship already exists'})}",
+            status_code=303,
+        )
 
     db.add(
         Friendship(
@@ -98,7 +134,10 @@ def friend_invite(
     )
     db.commit()
 
-    return RedirectResponse(url="/friends?success=Заявка%20отправлена", status_code=303)
+    return RedirectResponse(
+        url=f"/friends?{urlencode({'success': 'Friend request sent'})}",
+        status_code=303,
+    )
 
 
 @router.post("/accept")
@@ -113,21 +152,36 @@ def accept_friend(
 
     friendship = db.query(Friendship).filter(Friendship.id == friendship_id).first()
     if not friendship:
-        return RedirectResponse(url="/friends?error=Заявка%20не%20найдена", status_code=303)
+        return RedirectResponse(
+            url=f"/friends?{urlencode({'error': 'Friend request not found'})}",
+            status_code=303,
+        )
 
     if friendship.friend_id != user.id:
-        return RedirectResponse(url="/friends?error=Это%20не%20ваша%20заявка", status_code=303)
+        return RedirectResponse(
+            url=f"/friends?{urlencode({'error': 'You cannot accept this friend request'})}",
+            status_code=303,
+        )
 
     if friendship.status == FriendStatus.accepted:
-        return RedirectResponse(url="/friends?error=Эта%20заявка%20уже%20принята", status_code=303)
+        return RedirectResponse(
+            url=f"/friends?{urlencode({'error': 'This friend request has already been accepted'})}",
+            status_code=303,
+        )
 
     if friendship.status != FriendStatus.pending:
-        return RedirectResponse(url="/friends?error=Эта%20заявка%20больше%20не%20активна", status_code=303)
+        return RedirectResponse(
+            url=f"/friends?{urlencode({'error': 'This friend request is no longer active'})}",
+            status_code=303,
+        )
 
     friendship.status = FriendStatus.accepted
     db.commit()
 
-    return RedirectResponse(url="/friends?success=Заявка%20принята", status_code=303)
+    return RedirectResponse(
+        url=f"/friends?{urlencode({'success': 'Friend request accepted'})}",
+        status_code=303,
+    )
 
 
 @router.post("/reject")
@@ -165,16 +219,27 @@ def delete_friend(
 
     friendship = db.query(Friendship).filter(Friendship.id == friendship_id).first()
     if not friendship:
-        return RedirectResponse(url="/friends?error=Дружба%20не%20найдена", status_code=303)
+        return RedirectResponse(
+            url=f"/friends?{urlencode({'error': 'Friendship not found'})}",
+            status_code=303,
+        )
 
     if user.id not in (friendship.user_id, friendship.friend_id):
-        return RedirectResponse(url="/friends?error=Это%20не%20ваша%20дружба", status_code=303)
+        return RedirectResponse(
+            url=f"/friends?{urlencode({'error': 'You cannot remove this friend'})}",
+            status_code=303,
+        )
 
     if friendship.status != FriendStatus.accepted:
-        return RedirectResponse(url="/friends?error=Можно%20удалять%20только%20принятых%20друзей", status_code=303)
+        return RedirectResponse(
+            url=f"/friends?{urlencode({'error': 'Only accepted friends can be removed'})}",
+            status_code=303,
+        )
 
     db.delete(friendship)
     db.commit()
 
-    return RedirectResponse(url="/friends?success=Друг%20удален", status_code=303)
-
+    return RedirectResponse(
+        url=f"/friends?{urlencode({'success': 'Friend removed'})}",
+        status_code=303,
+    )

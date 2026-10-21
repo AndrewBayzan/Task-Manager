@@ -4,7 +4,7 @@ from fastapi import Request
 from fastapi.templating import Jinja2Templates
 
 from db import SessionLocal
-from models import User
+from models import FriendStatus, Friendship, User
 
 
 def add_current_user(request: Request):
@@ -19,8 +19,21 @@ def add_current_user(request: Request):
 
     with SessionLocal() as db:
         current_user = db.get(User, user_id)
+        incoming_friend_requests = 0
+        if current_user:
+            incoming_friend_requests = (
+                db.query(Friendship)
+                .filter(
+                    Friendship.friend_id == current_user.id,
+                    Friendship.status == FriendStatus.pending,
+                )
+                .count()
+            )
 
-    return {"current_user": current_user}
+    return {
+        "current_user": current_user,
+        "incoming_friend_requests": incoming_friend_requests,
+    }
 
 
 templates = Jinja2Templates(
